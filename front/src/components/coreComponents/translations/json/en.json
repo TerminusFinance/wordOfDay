@@ -1,0 +1,18 @@
+{
+  "store" : {
+    "buy_and_send": "Buy and Send Gifts",
+    "unique_gifts": "Unique gifts for everyone by Crypto Pay"
+  },
+  "navBar": {
+    "Predictions": "Predictions",
+    "AirDrop": "airDrop",
+    "Referrals": "Referrals",
+    "Tasks": "Tasks",
+    "Profile": "Profile"
+  },
+  "profile":{
+    "gifts_received": "gifts received",
+    "recent_actions": "Recent Actions"
+  }
+
+}
