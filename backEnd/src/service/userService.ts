@@ -1,6 +1,8 @@
 // @ts-ignore
 import mysql, {Connection} from "mysql2/promise";
 import {User} from "../types/userTypes";
+import {Invitations} from "../types/Types";
+import {getUserAvatarUrl} from "../bot/TgWorks";
 
 
 export class UserService {
@@ -14,11 +16,24 @@ export class UserService {
     async getUserById(userId: string): Promise<User | undefined> {
         const getUserSql = 'SELECT * FROM users WHERE userId = ?';
         const [rows] = await this.db.execute<mysql.RowDataPacket[]>(getUserSql, [userId]);
-        const user = rows[0];
-        return user as User | undefined;
+        const user = rows[0] as User | undefined;
+
+        if (user?.userId != null) {
+            if (user.imageAvatar == null) {
+                const image = await getUserAvatarUrl(userId);
+
+                if (image) {
+                    const updateImageSql = 'UPDATE users SET imageAvatar = ? WHERE userId = ?';
+                    await this.db.execute(updateImageSql, [image, userId]);
+
+                    // Обновляем поле в объекте user, чтобы вернуть актуальные данные
+                    user.imageAvatar = image;
+                }
+            }
+        }
+
+        return user;
     }
-
-
     async createUser(userId: string, userName: string, address: string): Promise<User> {
         try {
 
@@ -33,9 +48,10 @@ export class UserService {
 
             // Создание пользователя в таблице users
             const createUserSql = `
-            INSERT INTO users (userId, userName, codeToInvite, address, referral, createAt, dataUpdate)
+            INSERT INTO users (userId, userName, codeToInvite, address, referral, createAt, dataUpdate, imageAvatar)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?);
         `;
+            const image = await getUserAvatarUrl(userId)
 
             await this.db.execute(createUserSql, [
                 userId,
@@ -44,7 +60,8 @@ export class UserService {
                 address || null,
                 '', // assuming referral is always an empty string
                 createAt,
-                dataUpdate
+                dataUpdate,
+                image
             ]);
 
 
@@ -107,11 +124,11 @@ export class UserService {
         `;
             await this.db.execute(insertInvitationSql, [inviter.userId, newUserId]);
 
-            // const additionalCoins = isPremium ? 2500 : 500;
-            // const updateInviterCoinsSql = `UPDATE users
+            const additionalCoins = isPremium ? 2500 : 500;
+            const updateInviterCoinsSql = `UPDATE users
             //                                        SET coins = coins + ?
-            //                                        WHERE userId = ?`;
-            // await this.db.execute(updateInviterCoinsSql, [additionalCoins, inviter.userId]);
+--             //                                        WHERE userId = ?`;
+            await this.db.execute(updateInviterCoinsSql, [additionalCoins, inviter.userId]);
             const updateInvitationSql = `
                         INSERT INTO user_invitations (inviter_id, invitee_id)
                         VALUES (?, ?)
@@ -129,5 +146,41 @@ export class UserService {
     }
 
 
+    async getInviterUsers(userId: string) {
+        // Запрос для получения пользователей
+        const sql = `
+            SELECT u.userId, u.userName, ui.coinsReferral
+            FROM users u
+                     JOIN user_invitations ui ON u.userId = ui.invitee_id
+            WHERE ui.inviter_id = ?
+            ORDER BY ui.coinsReferral DESC
+                LIMIT 100
+        `;
+        const [rowsInvitees] = await this.db.execute(sql, [userId]);
+        const invitees = rowsInvitees as Invitations[];
+
+        // Запрос для получения общего количества пользователей
+        const countSql = `
+            SELECT COUNT(*) AS totalCount
+            FROM users u
+                     JOIN user_invitations ui ON u.userId = ui.invitee_id
+            WHERE ui.inviter_id = ?
+        `;
+        const [rowsCount] = await this.db.execute(countSql, [userId]);
+
+        // Преобразуйте результат в нужный формат
+        const totalCount = (rowsCount as [{ totalCount: number }])[0].totalCount;
+
+        return {
+            invitees,
+            totalCount
+        };
+    }
+
+
+    async addCoinsToUser(userId: string, count: number) {
+        const updateSql = `UPDATE users SET coins = coins + ? WHERE userId = ?`;
+        await this.db.execute(updateSql, [count, userId]);
+    }
 
 }

@@ -1,18 +1,53 @@
 {
-  "store" : {
-    "buy_and_send": "Buy and Send Gifts",
-    "unique_gifts": "Unique gifts for everyone by Crypto Pay"
-  },
   "navBar": {
-    "Predictions": "Predictions",
-    "AirDrop": "airDrop",
-    "Referrals": "Referrals",
-    "Tasks": "Tasks",
-    "Profile": "Profile"
+    "Predictions": "Предсказания",
+    "AirDrop": "AirDrop",
+    "Referrals": "Рефералы",
+    "Tasks": "Задачи",
+    "Profile": "Профиль"
   },
-  "profile":{
-    "gifts_received": "gifts received",
-    "recent_actions": "Recent Actions"
+  "loading": {
+    "loading": "Загрузка..."
+  },
+  "start": {
+    "get_the_best": "Получите лучшее",
+    "phrase": "предсказание",
+    "of_the_day": "дня",
+    "right_now": "Получите прямо сейчас"
+  },
+  "profile": {
+    "profile": "Профиль",
+    "statistic": "Статистика",
+    "app_settings": "Настройки приложения",
+    "words_you_received": "Слова, которые вы получили:",
+    "yours_friends": "Ваши друзья:",
+    "language": "Язык",
+    "air_drop": "AirDrop",
+    "on": "Включено",
+    "off": "Выключено"
+  },
+  "initData": {
+    "set_your": "Укажите начальные данные",
+    "date_of_birth": "Введите вашу дату рождения",
+    "favorite_animal": "Выберите ваше любимое животное",
+    "favorite_color": "Выберите ваш любимый цвет",
+    "right_now": "Получите прямо сейчас"
+  },
+  "predictions": {
+    "prediction_the_day": "Получите предсказание дня",
+    "get": "Получить"
+  },
+  "airDrop": {
+    "air_drop": "AirDrop",
+    "between_players": "Распределение токенов между игроками",
+    "read_more": "Узнать больше",
+    "enable_air_drop": "Шаги для активации AirDrop",
+    "connect_wallet": "Подключите кошелек",
+    "send_transaction": "Отправьте транзакцию",
+    "check_transaction": "Проверьте транзакцию"
+  },
+  "tasks": {
+    "tasks": "Задачи",
+    "completed_task": "Выполните задачу и получите приз"
   }
-
 }

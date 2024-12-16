@@ -10,6 +10,7 @@ import {TasksScreen} from "./components/screen/tasks/TasksScreen.tsx";
 import {ProfileScreen} from "./components/screen/profile/ProfileScreen.tsx";
 import {StartScreen} from "./components/screen/start/StartScreen.tsx";
 import {InitDataScreen} from "./components/screen/initData/InitDataScreen.tsx";
+import {ToastProvider} from "./components/viewComponents/Toast.tsx";
 
 function App() {
 
@@ -30,7 +31,7 @@ function App() {
   return (
     <div className="app-container">
       <DataProvider>
-        {/*<ToastProvider>*/}
+        <ToastProvider>
           <Router >
             <Routes>
                 <Route path={'/'} element={<LoadingScreen/>}/>
@@ -43,7 +44,7 @@ function App() {
                 <Route path={'/profile'} element={<ProfileScreen/>}/>
             </Routes>
           </Router>
-        {/*</ToastProvider>*/}
+        </ToastProvider>
       </DataProvider>
     </div>
 

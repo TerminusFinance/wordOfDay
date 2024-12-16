@@ -1,8 +1,5 @@
 {
-  "store" : {
-    "buy_and_send": "Buy and Send Gifts",
-    "unique_gifts": "Unique gifts for everyone by Crypto Pay"
-  },
+
   "navBar": {
     "Predictions": "Predictions",
     "AirDrop": "airDrop",
@@ -10,9 +7,49 @@
     "Tasks": "Tasks",
     "Profile": "Profile"
   },
-  "profile":{
-    "gifts_received": "gifts received",
-    "recent_actions": "Recent Actions"
+  "loading": {
+    "loading": "Loading..."
+  },
+  "start": {
+    "get_the_best": " Get the best",
+    "phrase": "phrase",
+    "of_the_day": "of the day",
+    "right_now": "Get right now"
+  },
+  "profile": {
+    "profile": "Profile",
+    "statistic": "Statistic",
+    "app_settings": "App Settings",
+    "words_you_received": "The words you received:",
+    "yours_friends": "Yours friends:",
+    "language": "Language",
+    "air_drop": "Air drop",
+    "on": "On",
+    "off": "Off"
+  },
+  "initData": {
+    "set_your": "Set your start Data",
+    "date_of_birth": "Enter your date of birth",
+    "favorite_animal": "Choose your favorite animal",
+    "favorite_color": "Choose your favorite color",
+    "right_now": "Get right now"
+  },
+  "predictions": {
+    "prediction_the_day": "Get a prediction of the day",
+    "get": "Get"
+  },
+  "airDrop": {
+    "air_drop": "AirDrop",
+    "between_players": "Distribution of tokens between players",
+    "read_more": "Read More",
+    "enable_air_drop": "Steps to enable AirDrop",
+    "connect_wallet": "Connect Wallet",
+    "send_transaction": "Send Transaction",
+    "check_transaction": "Check Transaction"
+  },
+  "tasks" : {
+    "tasks": "Tasks",
+    "completed_task": "Completed task, and get prize"
   }
 
 }

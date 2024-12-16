@@ -1,107 +1,151 @@
 import React, {useState} from "react";
-import colors from "../../viewComponents/Utilits.ts";
+import colors, {useTelegramBackButton} from "../../viewComponents/Utilits.ts";
 import DownDockBar from "../../viewComponents/downDockBar/DownDockBar.tsx";
 import {useNavigate} from "react-router-dom";
 import ProfileImage from "../../viewComponents/profileImage/ProfileImage.tsx";
-
+import {useData} from "../../coreComponents/DataContext.tsx";
+import {useTranslation} from "react-i18next";
+import {changeLanguage} from "i18next";
 export const ProfileScreen: React.FC = () => {
-
     const navigate = useNavigate();
+    const { dataApp, userPhraseData } = useData();
 
+
+    const dockBarHeight = 60;
+    const {t} = useTranslation()
+
+    try {
+
+        useTelegramBackButton(true)
+    } catch (e) {
+        console.log("error in postEvent - ", e)
+    }
+
+    const listLanguage = [
+        {
+            code: "RU",
+        },
+        {
+            code: "EN",
+        }
+    ];
+
+    const [selectedLanguage, setSelectedLanguage] = useState(listLanguage[1]);
 
     return (
-        <div style={{
-            width: '100%',
-            height: '100vh',
-            position: 'relative',
-            overflow: 'hidden',
-            background: colors.black,
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center'
-        }}>
-
-
-
-            <span style={{
-                color: colors.pink,
-                textAlign: 'center',
-                fontFamily: "UbuntuBold",
-                fontSize: '24px',
-                marginTop: '48px',
-            }}>
-                Profile
-            </span>
-            <div style={{height: '32px'}}/>
-            <ProfileImage imageSrc={""} badgeText={"AdisAbeba"}/>
-
-            <span style={{
-                width: 'calc(100% - 48px)',
-                fontSize: '24px',
-                marginTop: '32px',
-                fontFamily: 'UbuntuBold',
-                color: colors.white,
-                textAlign: 'left'
-            }}>
-                Statistic
-            </span>
-
-
-            <ItemTx txUno={"The words you received:"} txDos={"2"}/>
-            <ItemTx txUno={"Yours friends:"} txDos={"10"}/>
-
-
-
-            <span style={{
-                width: 'calc(100% - 48px)',
-                fontSize: '24px',
-                marginTop: '32px',
-                fontFamily: 'UbuntuBold',
-                color: colors.white,
-                textAlign: 'left'
-            }}>
-                App Settings
-            </span>
-
-            <ItemTxMenu txUno={"Language"} txDos={"EN"} openedMenu={["EN", "RU"]} onSelect={() => {}}/>
-            <ItemTxMenu txUno={"Air drop"} txDos={"On"} openedMenu={["On", "Off"]} onSelect={() => {}}/>
-
-
-            <div style={{
-                position: 'fixed',
-                bottom: 0,
-                left: 0,
+        <div
+            style={{
                 width: '100%',
-                zIndex: 3,
+                minHeight: '100vh',
+                position: 'relative',
+                overflowX: 'hidden',
+                background: colors.black,
                 display: 'flex',
                 flexDirection: 'column',
                 alignItems: 'center',
-            }}>
+            }}
+        >
+            <div
+                style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    boxSizing: 'border-box',
+                    flexDirection: 'column',
+                    width: '100%',
+                    paddingBottom: `${dockBarHeight}px`, // Отступ для учета док-бара
+                }}
+            >
+                <span
+                    style={{
+                        color: colors.pink,
+                        textAlign: 'center',
+                        fontFamily: "UbuntuBold",
+                        fontSize: '24px',
+                        marginTop: '48px',
+                    }}
+                >
+                    {t('profile.profile')}
+                </span>
+                <div style={{ height: '32px' }} />
+                <ProfileImage imageSrc={dataApp.imageAvatar ? dataApp.imageAvatar : ""} badgeText={dataApp.userName} />
 
+                <span
+                    style={{
+                        width: 'calc(100% - 48px)',
+                        fontSize: '24px',
+                        marginTop: '32px',
+                        fontFamily: 'UbuntuBold',
+                        color: colors.white,
+                        textAlign: 'left',
+                    }}
+                >
+                    {t('profile.statistics')}
+                </span>
 
-                <DownDockBar initialSelected={"Profile"} onPredictionsClick={() => {
-                    navigate('/predictions')
-                }} onProfileClick={() => {
-                }} onAirDropClick={() => {
-                    navigate('/airDrop')
-                }} onReferralsClick={() => {
-                    navigate('/referrals')
-                }} onTasksClick={() => {
-                    navigate('/tasks')
-                }}/>
+                <ItemTx txUno={t('profile.words_you_received')} txDos={userPhraseData.totalPhrases.toString()} />
+                <ItemTx txUno={t("profile.yours_friends")} txDos={"10"} />
+
+                <span
+                    style={{
+                        width: 'calc(100% - 48px)',
+                        fontSize: '24px',
+                        marginTop: '32px',
+                        fontFamily: 'UbuntuBold',
+                        color: colors.white,
+                        textAlign: 'left',
+                    }}
+                >
+                       {t('profile.app_settings')}
+                </span>
+
+                <ItemTxMenu txUno={t('profile.language')} txDos={selectedLanguage.code} openedMenu={["EN", "RU"]} onSelect={(code) => {
+                    setSelectedLanguage({code})
+                    changeLanguage(code.toLowerCase())
+                }} />
+                <ItemTx txUno={t('profile.air_drop')} txDos={dataApp.enabledAirDrop ? t('profile.on') : t('profile.off')} />
             </div>
 
+            <div
+                style={{
+                    position: 'fixed',
+                    bottom: 0,
+                    left: 0,
+                    width: '100%',
+                    zIndex: 3,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                }}
+            >
+                <DownDockBar
+                    initialSelected={"Profile"}
+                    onPredictionsClick={() => {
+                        navigate('/predictions');
+                    }}
+                    onProfileClick={() => {}}
+                    onAirDropClick={() => {
+                        navigate('/airDrop');
+                    }}
+                    onReferralsClick={() => {
+                        navigate('/referrals');
+                    }}
+                    onTasksClick={() => {
+                        navigate('/tasks');
+                    }}
+                />
+            </div>
         </div>
-    )
-}
+    );
+};
 
 
 interface ItemTxParam {
     txUno: string;
     txDos: string;
+    onClick?: () => void | null
 }
 
-export const ItemTx: React.FC<ItemTxParam> = ({txUno, txDos}) => {
+export const ItemTx: React.FC<ItemTxParam> = ({txUno, txDos, onClick}) => {
 
 
     return (
@@ -118,7 +162,7 @@ export const ItemTx: React.FC<ItemTxParam> = ({txUno, txDos}) => {
             gap: '16px',
             marginTop: '16px',
             width: 'calc(100% - 48px)',
-        }}>
+        }} onClick={onClick}>
                         <span style={{
                             color: colors.black,
                             fontSize: '16px',

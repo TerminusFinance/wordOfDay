@@ -1,12 +1,17 @@
 import React, { useEffect, useState } from "react";
 import colors from "../../viewComponents/Utilits.ts";
-import {useNavigate} from "react-router-dom";
+import {useLocation, useNavigate} from "react-router-dom";
+import {useTranslation} from "react-i18next";
 
 
 
 export const StartScreen: React.FC = () => {
     const [hovered, setHovered] = useState(false);
     const navigate = useNavigate();
+    const location = useLocation()
+    const {inviteCode} = location.state as { inviteCode: string | null }
+    const {t} = useTranslation()
+
     useEffect(() => {
         const upperText = document.getElementById('upper-text');
         const bottomText = document.getElementById('bottom-text');
@@ -50,9 +55,9 @@ export const StartScreen: React.FC = () => {
                     animation: `slide-up 1.5s ease-out forwards`,
                 }}
             >
-                Get the best
+                {t('start.get_the_best')}
                 <br />
-                phrase   <br />of the day
+                {t('start.phrase')}   <br />{t('start.of_the_day')}
             </span>
 
             <span
@@ -74,9 +79,9 @@ export const StartScreen: React.FC = () => {
                 }}
                 onMouseEnter={() => setHovered(true)}
                 onMouseLeave={() => setHovered(false)}
-                onClick={() => {navigate("/initData")}}
+                onClick={() => {navigate("/initData", {state: {inviteCode: inviteCode}})}}
             >
-                Get right now -&gt;
+                ${t('start.right_now')} -&gt;
             </span>
 
             <style>

@@ -14,6 +14,7 @@ function userRouter(userService: UserService) {
             const initData = res.locals.initData as InitDataParsed;
             const userId = initData.user?.id
             const name = initData.user?.firstName
+            console.log("userID",userId, "name - ",name)
             if (userId != undefined && name != undefined) {
                 const user = await userService.createUser(userId.toString(), name, address);
                 res.status(201).json(user);

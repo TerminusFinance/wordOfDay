@@ -1,9 +1,13 @@
-import React, { CSSProperties, useEffect, useState } from "react";
+import React, {CSSProperties, useEffect, useState} from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import colors from "../../viewComponents/Utilits.ts";
-import { useNavigate } from "react-router-dom";
-
+import {useLocation, useNavigate} from "react-router-dom";
+import {createUser, processInvitationFromInviteCode} from "../../coreComponents/remoteWorks/UserRemote.ts";
+import {useData} from "../../coreComponents/DataContext.tsx";
+import Progressbar from "../../viewComponents/progressbar/Progressbar.tsx";
+import {useToast} from "../../viewComponents/Toast.tsx";
+import {useTranslation} from "react-i18next";
 
 const inputStyle = {
     background: 'transparent',
@@ -59,14 +63,46 @@ export const InitDataScreen: React.FC = () => {
     const [color, setColor] = useState("#ffffff");
     const [animate, setAnimate] = useState(false);
     const navigate = useNavigate();
-
-
+    const location = useLocation()
+    const {inviteCode} = location.state as { inviteCode: string | null }
+    const {setDataApp} = useData();
+    const [loading, setLoading] = useState(false);
     const isFormComplete = date !== null && animal !== "" && color !== "";
+
+    const {t} = useTranslation()
 
     useEffect(() => {
         setAnimate(true);
     }, []);
 
+    const {showToast} = useToast();
+    const handleShowToast = (message: string, type: 'success' | 'error' | 'info') => {
+        showToast(message, type);
+    };
+
+    const onNextHandler = async () => {
+        try {
+            setLoading(true)
+            if (inviteCode == null) {
+                const result = await createUser();
+                console.log("result", result);
+                setDataApp(result)
+                navigate('/predictions');
+            } else {
+                console.log("StartSCREEN - InviteCode - ", inviteCode)
+                const result = await processInvitationFromInviteCode(inviteCode);
+                if(typeof result === 'object') {
+                    console.log("result", result);
+                    setDataApp(result)
+                    navigate('/predictions');
+                }
+            }
+        } catch (error) {
+            setLoading(false)
+            handleShowToast(`an error has occurred - ${error}`, 'error')
+            console.error("Error in goToAbout:", error);
+        }
+    }
 
     return (
         <div style={containerStyle}>
@@ -79,7 +115,7 @@ export const InitDataScreen: React.FC = () => {
                 marginBottom: '40px',
                 ...(animate ? fadeInUp : {}),
             }}>
-                Set your start Data
+               {t('initData.set_your')}
             </span>
 
             <div style={inputContainerStyle}>
@@ -91,15 +127,15 @@ export const InitDataScreen: React.FC = () => {
                     ...(animate ? fadeInUpDelayed : {}),
                 }}>
                     <label htmlFor="date" style={labelStyle}>
-                        Enter your date of birth
+                        {t('initData.date_of_birth')}
                     </label>
                     <DatePicker
                         id="date"
                         selected={date}
-                        onChange={(date: Date) => setDate(date)}
+                        onChange={(date: Date | null) => setDate(date)}
                         dateFormat="dd/MM/yyyy"
                         placeholderText="Select a date"
-                        customInput={<input style={inputStyle} />}
+                        customInput={<input style={inputStyle}/>}
                         popperPlacement="bottom-start"
                     />
                 </div>
@@ -112,7 +148,7 @@ export const InitDataScreen: React.FC = () => {
                     ...(animate ? fadeInUpDelayed : {}),
                 }}>
                     <label htmlFor="animal" style={labelStyle}>
-                        Choose your favorite animal
+                        {t('initData.favorite_animal')}
                     </label>
                     <select
                         id="animal"
@@ -135,7 +171,7 @@ export const InitDataScreen: React.FC = () => {
                     ...(animate ? fadeInUpDelayed : {}),
                 }}>
                     <label htmlFor="color" style={labelStyle}>
-                        Choose your favorite color
+                        {t('initData.favorite_color')}
                     </label>
                     <input
                         id="color"
@@ -168,14 +204,14 @@ export const InitDataScreen: React.FC = () => {
                         animation: animate ? 'fadeInUp 1.5s ease-out' : 'none',
                     }}
                     onClick={() => {
-                        if (isFormComplete) navigate("/predictions");
+                        if (isFormComplete) onNextHandler();
                     }}
                 >
-                    Get right now -&gt;
+                    {t('initData.right_now')} -&gt;
                 </span>
             </div>
 
-
+            {loading && <Progressbar bgIsV={true}/>}
             <style>
                 {`
                     @keyframes fadeInUp {
@@ -190,6 +226,7 @@ export const InitDataScreen: React.FC = () => {
                     }
                 `}
             </style>
+
         </div>
     );
 };

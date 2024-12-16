@@ -1,16 +1,15 @@
-import React, {createContext, useContext, useState, ReactNode, useEffect} from 'react';
-
-
+import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
+import { UserBasic } from "./types/UserType.ts";
+import { UserPhraseData } from './types/phraseTypes.ts';
 
 // Определение интерфейсов
-interface User {
-    userId: string;
-    userName: string;
-    gifts: number
-}
+
+
 interface DataContextType {
-    dataApp: User;
-    setDataApp: React.Dispatch<React.SetStateAction<User>>;
+    dataApp: UserBasic;
+    setDataApp: React.Dispatch<React.SetStateAction<UserBasic>>;
+    userPhraseData: UserPhraseData;
+    setUserPhraseData: React.Dispatch<React.SetStateAction<UserPhraseData>>;
 }
 
 // Создание контекста
@@ -21,26 +20,49 @@ interface DataProviderProps {
     children: ReactNode;
 }
 
-const initialUserBasic: User = {
+const initialUserBasic: UserBasic = {
+    address: "",
+    codeToInvite: "",
+    coins: 0,
+    createAt: "",
+    dataUpdate: "",
+    enabledAirDrop: 0,
+    referral: "",
     userId: "",
-    userName: "",
-    gifts: 0
+    userName: ""
+};
+
+const initialUserPhraseData: UserPhraseData = {
+    phrase: "",
+    dateReceived: "",
+    totalPhrases: 0,
+    isToday: false,
 };
 
 const DataProvider: React.FC<DataProviderProps> = ({ children }) => {
-    const [dataApp, setDataApp] = useState<User>(() => {
-        return  initialUserBasic;
+    const [dataApp, setDataApp] = useState<UserBasic>(() => {
+        const storedData = localStorage.getItem('dataApp');
+        return storedData ? JSON.parse(storedData) : initialUserBasic;
+    });
+
+    const [userPhraseData, setUserPhraseData] = useState<UserPhraseData>(() => {
+        const storedPhraseData = localStorage.getItem('userPhraseData');
+        return storedPhraseData ? JSON.parse(storedPhraseData) : initialUserPhraseData;
     });
 
     useEffect(() => {
         localStorage.setItem('dataApp', JSON.stringify(dataApp));
     }, [dataApp]);
 
+    useEffect(() => {
+        localStorage.setItem('userPhraseData', JSON.stringify(userPhraseData));
+    }, [userPhraseData]);
+
     return (
-        <DataContext.Provider value={{ dataApp, setDataApp}}>
-    {children}
-    </DataContext.Provider>
-);
+        <DataContext.Provider value={{ dataApp, setDataApp, userPhraseData, setUserPhraseData }}>
+            {children}
+        </DataContext.Provider>
+    );
 };
 
 // Кастомный хук для использования контекста
@@ -52,4 +74,5 @@ const useData = (): DataContextType => {
     return context;
 };
 
-export { DataProvider, useData };
+export {DataProvider, useData};
+export type { UserPhraseData };

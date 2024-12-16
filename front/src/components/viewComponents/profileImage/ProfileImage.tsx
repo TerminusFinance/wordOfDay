@@ -12,7 +12,6 @@ interface ProfileImageWithBadgeProps {
 const ProfileImageWithBadge: React.FC<ProfileImageWithBadgeProps> = ({
                                                                          imageSrc,
                                                                          badgeText,
-
                                                                          badgeTextColor = "#FFFFFF",
                                                                          size = 100,
                                                                      }) => {
@@ -33,7 +32,9 @@ const ProfileImageWithBadge: React.FC<ProfileImageWithBadgeProps> = ({
                 style={{
                     width: "100%",
                     height: "100%",
-                    borderRadius: "50%", // Это уже создаёт круглый элемент
+                    borderRadius: "50%",
+                    overflow: "hidden",
+                    clipPath: "circle(50% at 50% 50%)",
                     display: "flex",
                     justifyContent: "center",
                     alignItems: "center",

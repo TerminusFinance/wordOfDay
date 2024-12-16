@@ -1,20 +1,63 @@
-import React, { useState } from "react";
-import colors from "../../viewComponents/Utilits.ts";
+import React, { useEffect, useState } from "react";
+import colors, { useTelegramBackButton } from "../../viewComponents/Utilits.ts";
 import DownDockBar from "../../viewComponents/downDockBar/DownDockBar.tsx";
 import { useNavigate } from "react-router-dom";
+import { getPhrase, getUserPhraseData } from "../../coreComponents/remoteWorks/UserPhraseRemote.ts";
+import {useTranslation} from "react-i18next";
 
 export const PredictionsScreen: React.FC = () => {
-    const [isLoading, setIsLoading] = useState(false);
-    const [isComplete, setIsComplete] = useState(false);
+    const [isLoadingBtn, setIsLoadingBtn] = useState(false); // Состояние загрузки кнопки
+    const [isComplete, setIsComplete] = useState(false); // Завершенность получения предсказания
+    const [phraseData, setPhraseData] = useState<{ phrase: string; isToday: boolean } | null>(null); // Данные предсказания
     const navigate = useNavigate();
 
-    const handleButtonClick = () => {
-        if (!isLoading && !isComplete) {
-            setIsLoading(true);
-            setTimeout(() => {
-                setIsLoading(false);
+    // Кэш для сохранения данных между переходами
+    const cachedPhraseData = React.useRef<{ phrase: string; isToday: boolean } | null>(null);
+
+    const {t} = useTranslation()
+
+    useTelegramBackButton(false);
+
+    useEffect(() => {
+        if (!cachedPhraseData.current) {
+            fetchPhraseData(); // Запрос, если данных в кэше нет
+        } else {
+            setPhraseData(cachedPhraseData.current); // Используем кэш
+            if (cachedPhraseData.current.isToday) {
                 setIsComplete(true);
-            }, 3000);
+            }
+        }
+    }, []);
+
+    const fetchPhraseData = async () => {
+        try {
+            const result = await getUserPhraseData();
+            if (result && typeof result === "object") {
+                cachedPhraseData.current = result; // Сохраняем данные в кэш
+                setPhraseData(result);
+                if (result.isToday) {
+                    setIsComplete(true);
+                }
+            }
+        } catch (error) {
+            console.error("Error fetching phrase data:", error);
+        }
+    };
+
+    const handleButtonClick = async () => {
+        if (!isLoadingBtn && !isComplete) {
+            setIsLoadingBtn(true);
+            try {
+                const result = await getPhrase();
+                if (result && typeof result === "object") {
+                    await fetchPhraseData(); // Обновляем данные
+                    setIsComplete(true);
+                }
+            } catch (error) {
+                console.error("Error fetching phrase:", error);
+            } finally {
+                setIsLoadingBtn(false);
+            }
         }
     };
 
@@ -29,7 +72,6 @@ export const PredictionsScreen: React.FC = () => {
             flexDirection: 'column',
             alignItems: 'center',
         }}>
-
             <span style={{
                 color: colors.pink,
                 textAlign: 'center',
@@ -37,9 +79,8 @@ export const PredictionsScreen: React.FC = () => {
                 fontSize: '24px',
                 marginTop: '48px',
             }}>
-                Get a prediction of the day
+                {t('predictions.prediction_the_day')}
             </span>
-
 
             <div style={{
                 flex: 1,
@@ -61,22 +102,22 @@ export const PredictionsScreen: React.FC = () => {
                                 color: colors.white,
                                 fontSize: '24px',
                                 fontFamily: "UbuntuBold",
-                                cursor: isLoading ? 'default' : 'pointer',
+                                cursor: isLoadingBtn ? 'default' : 'pointer',
                                 position: 'relative',
                                 zIndex: 1,
                                 transition: 'opacity 0.5s ease',
-                                opacity: isLoading ? 0.7 : 1,
+                                opacity: isLoadingBtn ? 0.7 : 1,
                                 outline: "none",
                                 userSelect: "none",
                                 WebkitTapHighlightColor: "transparent",
                             }}
-                            disabled={isLoading}
+                            disabled={isLoadingBtn}
                         >
-                            Get
+                            {t('predictions.get')}
                         </button>
 
                         {/* Прогресс вокруг кнопки */}
-                        {isLoading && (
+                        {isLoadingBtn && (
                             <div style={{
                                 position: 'absolute',
                                 width: '140px',
@@ -102,7 +143,7 @@ export const PredictionsScreen: React.FC = () => {
                             fontSize: '20px',
                             fontFamily: "UbuntuBold",
                         }}>
-                            Your prediction is ready!
+                            {phraseData?.phrase}
                         </span>
                     </div>
                 )}
