@@ -2,12 +2,14 @@ import express from "express";
 import TelegramService from "../service/TelegramService";
 import {authFromCode} from "../auth/authFromCode";
 import {ImageService, upload} from "../service/ImageService";
+import {AdminService} from "../service/AdminService";
 
 const router = express.Router();
 
 function adminsRouter(
                       telegramService: TelegramService,
-                      imageService: ImageService
+                      imageService: ImageService,
+                      adminService: AdminService
 ) {
 
 
@@ -32,7 +34,20 @@ function adminsRouter(
         imageService.getImages(req, res)
     })
 
-return router;
+    router.post('/deleteUser', authFromCode, async (req, res) => {
+        try {
+            const {userId} = req.body;
+
+            const result = await adminService.deleteUserById(userId);
+            res.status(200).json(result);
+        } catch (error) {
+            console.error("error in delete users",error)
+            res.status(400).json({ message: error });
+        }
+    });
+
+
+    return router;
 
 }
 

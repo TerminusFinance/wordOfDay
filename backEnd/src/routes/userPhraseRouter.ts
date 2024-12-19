@@ -9,14 +9,15 @@ const router = express.Router();
 
 function userPhraseRouter(userPhrasesService: UserPhraseService) {
 
-    router.get('/getPhrase', authMiddleware, async (req,  res) => {
+    router.post('/getPhrase', authMiddleware, async (req,  res) => {
         try {
+            const {language} = req.body;
             const initData = res.locals.initData as InitDataParsed;
 
             const id = initData.user?.id
 
             if (id != undefined) {
-                const user = await userPhrasesService.getPhrase(id.toString());
+                const user = await userPhrasesService.getPhrase(id.toString(), language);
                 console.log("phrase - ",user)
                 if (!user) {
                     res.status(404).json({message: 'User not found'});

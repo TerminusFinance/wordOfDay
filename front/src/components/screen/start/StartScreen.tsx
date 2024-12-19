@@ -81,7 +81,7 @@ export const StartScreen: React.FC = () => {
                 onMouseLeave={() => setHovered(false)}
                 onClick={() => {navigate("/initData", {state: {inviteCode: inviteCode}})}}
             >
-                ${t('start.right_now')} -&gt;
+                {t('start.right_now')} -&gt;
             </span>
 
             <style>

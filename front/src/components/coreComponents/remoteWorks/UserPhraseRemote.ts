@@ -2,11 +2,12 @@ import axios from "axios";
 import {BASE_URL, initDataRaw} from "./GlobalRemote.tsx";
 import {UserPhrase, UserPhraseData} from "../types/phraseTypes.ts";
 
-export const getPhrase = async (): Promise<UserPhrase | string> => {
+export const getPhrase = async (language: string): Promise<UserPhrase | string> => {
 
     try {
-        const response = await axios.get<UserPhrase>(
-            `${BASE_URL}phrase/getPhrase`, {headers: {Authorization: `tma ${initDataRaw}`}}
+        const response = await axios.post<UserPhrase>(
+            `${BASE_URL}phrase/getPhrase`,
+            {language}, {headers: {Authorization: `tma ${initDataRaw}`}}
         );
 
         console.log('Response data:', typeof response.data);

@@ -48,13 +48,14 @@ export const ReferralsScreen: React.FC = () => {
     return (
         <div style={{
             width: '100%',
-            height: '100vh',
+            minHeight: '100vh',
             position: 'relative',
-            overflow: 'hidden',
+            overflowX: 'hidden',
             background: colors.black,
             display: 'flex',
             flexDirection: 'column',
-            alignItems: 'center'
+            alignContent: 'center',
+            alignItems: 'center',
         }}>
 
 
@@ -106,7 +107,14 @@ export const ReferralsScreen: React.FC = () => {
                     }}>
                         {userInvitedItem.map((invite, pos) => (
                             <div style={{
-                                width: '100%'
+                                display: 'flex',
+                                flexDirection: 'column',
+                                width: '100%',
+                                boxSizing: 'border-box',
+                                paddingRight: '16px',
+                                paddingLeft: '16px',
+                                alignContent: 'center',
+                                alignItems: 'center',
                             }}>
                                 <TaskItem
                                     key={pos}
@@ -125,41 +133,41 @@ export const ReferralsScreen: React.FC = () => {
 
             </div>
 
+            <div style={{
+                position: 'fixed',
+                bottom: 0,
+                left: 0,
+                width: '100%',
+                zIndex: 3,
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+            }}>
+
+
                 <div style={{
-                    position: 'fixed',
-                    bottom: 0,
-                    left: 0,
-                    width: '100%',
-                    zIndex: 3,
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
+                    width: 'calc(100% - 48px)',
+                    marginBottom: '8px'
                 }}>
-
-
-                    <div style={{
-                        width: 'calc(100% - 48px)',
-                        marginBottom: '8px'
-                    }}>
-                        <ButtonMain onClick={() => {
-                            sendToTgChose(dataApp.codeToInvite)
-                        }} tx={"Invite"}/>
-                    </div>
-
-                    <DownDockBar initialSelected={"Referrals"} onPredictionsClick={() => {
-                        navigate('/predictions')
-                    }} onProfileClick={() => {
-                        navigate('/profile')
-                    }} onAirDropClick={() => {
-                        navigate('/airDrop')
-                    }} onReferralsClick={() => {
-                    }} onTasksClick={() => {
-                        navigate('/tasks')
-                    }}/>
+                    <ButtonMain onClick={() => {
+                        sendToTgChose(dataApp.codeToInvite)
+                    }} tx={"Invite"}/>
                 </div>
 
-                {loading && <Progressbar bgIsV={true}/>}
-
+                <DownDockBar initialSelected={"Referrals"} onPredictionsClick={() => {
+                    navigate('/predictions')
+                }} onProfileClick={() => {
+                    navigate('/profile')
+                }} onAirDropClick={() => {
+                    navigate('/airDrop')
+                }} onReferralsClick={() => {
+                }} onTasksClick={() => {
+                    navigate('/tasks')
+                }}/>
             </div>
-            )
-            }
+
+            {loading && <Progressbar bgIsV={true}/>}
+
+        </div>
+    )
+}

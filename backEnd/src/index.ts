@@ -20,6 +20,9 @@ import TelegramService from "./service/TelegramService";
 import adminsRouter from "./routes/adminRouter";
 import {getManifest} from "./routes/manifestRouter";
 import {ImageService} from "./service/ImageService";
+import {AdminService} from "./service/AdminService";
+import acquisitionsRouter from "./routes/acquistionsRoutre";
+import AcquisitionsService from "./service/AcquisitionsService";
 
 
 const app = express();
@@ -37,13 +40,15 @@ connectDatabase().then(db => {
     const phraseService = new PhraseService();
     const telegramService = new TelegramService(db);
     const imageService = new ImageService(db);
-
+    const adminService = new AdminService(db);
+    const acquisitionsService = new AcquisitionsService(db)
     app.use('/api/users', userRouter(userService));
     app.use('/api/phrase', userPhraseRouter(userPhraseService))
     app.use('/api/task', taskRouter(taskService));
     app.use('/api/phrase', phraseRouter(phraseService))
 
-    app.use('/api/adm', adminsRouter(telegramService, imageService));
+    app.use('/api/adm', adminsRouter(telegramService, imageService, adminService));
+    app.use('/api/acquisitions', acquisitionsRouter(acquisitionsService))
     // app.use('/api/pools', poolsRouter(poolsController))
 
     app.get('/api/img/:filename', (req, res) => {

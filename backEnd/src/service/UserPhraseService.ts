@@ -1,4 +1,5 @@
 import {Connection} from 'mysql2/promise';
+import {PhraseService} from "./PhraseService";
 
 export class UserPhraseService {
     private db: Connection;
@@ -7,7 +8,7 @@ export class UserPhraseService {
         this.db = db;
     }
 
-    async getPhrase(userId: string): Promise<string> {
+    async getPhrase(userId: string, language: string): Promise<string> {
         // Получаем сегодняшнюю дату в формате 'YYYY/MM/DD'
         const today = new Date().toISOString().split('T')[0].replace(/-/g, '/').toString(); // '2024/12/06'
         console.log("today",today)
@@ -25,8 +26,8 @@ export class UserPhraseService {
         }
 
         // Генерируем случайную фразу
-        const phrase = this.generateRandomPhrase();
-
+        const phrase = await this.generateRandomPhrase(language);
+        console.log("phrase is -",phrase)
         // Вставляем или обновляем запись в базу данных
         await this.db.query(
             `INSERT INTO UserPhrases (userId, phrase, dateReceived, totalPhrases)
@@ -87,21 +88,17 @@ export class UserPhraseService {
         }
     }
 
-    private generateRandomPhrase(): string {
-        const phrases = [
-            "Keep pushing forward.",
-            "Believe in yourself.",
-            "Success is a journey.",
-            "Every day is a new opportunity.",
-            "The best time to start is now.",
-            "Hard work always pays off.",
-            "Stay positive and strong.",
-            "Dream big and achieve bigger.",
-            "Never stop learning.",
-            "Make today count."
-        ];
-
-        const randomIndex = Math.floor(Math.random() * phrases.length);
-        return phrases[randomIndex];
+    private generateRandomPhrase  = async (item: string) : Promise<string> =>  {
+        if(item == "RU") {
+            const phrase = await new PhraseService().getRussianPhrases()
+            console.log('eng ph - ', phrase)
+            const randomIndex = Math.floor(Math.random() * phrase.length);
+            return phrase[randomIndex];
+        } else {
+            const phrase = await new PhraseService().getEnglishPhrases()
+            console.log('eng ph - ', phrase)
+            const randomIndex = Math.floor(Math.random() * phrase.length);
+            return phrase[randomIndex];
+        }
     }
 }

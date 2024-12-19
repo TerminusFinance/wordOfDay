@@ -48,7 +48,7 @@ export const OpenUrl = (url: string) =>{
 
 export const sendToTgChose = (shareUrl: string) => {
 
-    const shareMessage = `t.me/TapFapCoinBot/Enjoy?startapp=${shareUrl}
+    const shareMessage = `t.me/WordStreamBot/App?startapp=${shareUrl}
 ` +
         "\n" +
         "Play with me and get the opportunity to become a token holder through airdrop!\n" +

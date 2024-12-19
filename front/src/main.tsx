@@ -5,7 +5,7 @@ import App from './App.tsx'
 import {SDKProvider} from "@telegram-apps/sdk-react";
 import {TonConnectUIProvider} from "@tonconnect/ui-react";
 import './components/coreComponents/translations/i18n.ts';
-const manifestUrl = 'https://wm-mariupol.com/api/manifest';
+const manifestUrl = 'https://shuriginadiana.net/api/manifest';
 
 
 createRoot(document.getElementById('root')!).render(

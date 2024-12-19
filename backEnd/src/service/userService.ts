@@ -109,32 +109,25 @@ export class UserService {
     `;
         await this.db.execute(newUserSql, [newUserId, newUserName, 0, codeToInvite, '', inviteCode, createAt, dataUpdate]);
 
-        const createEnergySql = `
-            INSERT INTO energy (userId, currentEnergy, maxEnergy)
-            VALUES (?, 1000, 1000);
-        `;
-
-        await this.db.execute(createEnergySql, [newUserId]);
-
 
             // Если это обычное приглашение пользователя, добавляем запись в user_invitations
-            const insertInvitationSql = `
-            INSERT INTO user_invitations (inviter_id, invitee_id)
+        const insertInvitationSql = `
+            INSERT INTO user_invitations (inviter_id, invitee_id, coinsReferral)
             VALUES (?, ?, 0)
         `;
-            await this.db.execute(insertInvitationSql, [inviter.userId, newUserId]);
+        await this.db.execute(insertInvitationSql, [inviter.userId, newUserId]);
 
-            const additionalCoins = isPremium ? 2500 : 500;
-            const updateInviterCoinsSql = `UPDATE users
-            //                                        SET coins = coins + ?
---             //                                        WHERE userId = ?`;
-            await this.db.execute(updateInviterCoinsSql, [additionalCoins, inviter.userId]);
-            const updateInvitationSql = `
-                        INSERT INTO user_invitations (inviter_id, invitee_id)
-                        VALUES (?, ?)
-                    `;
-            await this.db.execute(updateInvitationSql, [inviter.userId, newUserId]);
-
+        const additionalCoins = isPremium ? 2500 : 500;
+        const updateInviterCoinsSql = `UPDATE users
+                                       SET coins = coins + ?
+                                       WHERE userId = ?`;
+        await this.db.execute(updateInviterCoinsSql, [additionalCoins, inviter.userId]);
+        const updateInvitationSql = `
+            INSERT INTO user_invitations (inviter_id, invitee_id, coinsReferral)
+            VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE
+                coinsReferral = coinsReferral + VALUES(coinsReferral)
+        `;
+        await this.db.execute(updateInvitationSql, [inviter.userId, newUserId, additionalCoins]);
 
         const user = await this.getUserById(newUserId);
 
@@ -182,5 +175,83 @@ export class UserService {
         const updateSql = `UPDATE users SET coins = coins + ? WHERE userId = ?`;
         await this.db.execute(updateSql, [count, userId]);
     }
+
+
+    async updateUser(userId: string, updatedData: Partial<User>): Promise<User | undefined> {
+        const { userName, coins, address, referral } = updatedData;
+        const updateDate = new Date().toISOString();
+
+        // Построение динамического SQL-запроса и массива параметров
+        let updateUserSql = `
+    UPDATE users
+    SET dataUpdate = ?`;
+        const params: (string | number)[] = [updateDate];
+
+        if (userName !== undefined) {
+            updateUserSql += `, userName = ?`;
+            params.push(userName);
+        }
+        if (coins !== undefined) {
+            updateUserSql += `, coins = ?`;
+            params.push(coins);
+        }
+        if (address !== undefined) {
+            updateUserSql += `, address = ?`;
+            params.push(address);
+        }
+        if (referral !== undefined) {
+            updateUserSql += `, referral = ?`;
+            params.push(referral);
+        }
+
+        updateUserSql += ` WHERE userId = ?`;
+        params.push(userId);
+
+        try {
+            const originalUser = await this.getUserById(userId);
+            if (!originalUser) {
+                throw new Error('User not found');
+            }
+
+            await this.db.execute(updateUserSql, params);
+
+            const updatedUser = await this.getUserById(userId);
+            if (!updatedUser) {
+                throw new Error('Failed to retrieve updated user');
+            }
+
+            // Проверка и обновление монет пригласившего пользователя
+            if (updatedUser.referral) {
+                const referralSql = `SELECT * FROM users WHERE codeToInvite = ?`;
+                const [inviterRows]: [any[], any] = await this.db.execute(referralSql, [updatedUser.referral]);
+                const inviter = inviterRows[0];
+
+                if (inviter) {
+                    const updatedCoins = updatedUser.coins || 0;
+                    const originalThousands = Math.floor((originalUser.coins || 0) / 1000);
+                    const updatedThousands = Math.floor(updatedCoins / 1000);
+
+                    if (updatedThousands > originalThousands) {
+                        const additionalCoins = (updatedThousands - originalThousands) * 100;
+                        const updateInviterCoinsSql = `UPDATE users SET coins = coins + ? WHERE userId = ?`;
+                        await this.db.execute(updateInviterCoinsSql, [additionalCoins, inviter.userId]);
+
+                        const updateInvitationSql = `
+                    INSERT INTO user_invitations (inviter_id, invitee_id, coinsReferral)
+                    VALUES (?, ?, ?)
+                    ON DUPLICATE KEY UPDATE coinsReferral = coinsReferral + VALUES(coinsReferral)
+                `;
+                        await this.db.execute(updateInvitationSql, [inviter.userId, userId, additionalCoins]);
+                    }
+                }
+            }
+
+            return updatedUser;
+        } catch (error) {
+            console.error('Error updating user:', error);
+            throw new Error(`Failed to update user: ${error}`);
+        }
+    }
+
 
 }

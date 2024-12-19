@@ -13,7 +13,7 @@
   "start": {
     "get_the_best": " Get the best",
     "phrase": "phrase",
-    "of_the_day": "of the day",
+    "of_the_day": "",
     "right_now": "Get right now"
   },
   "profile": {
@@ -25,7 +25,8 @@
     "language": "Language",
     "air_drop": "Air drop",
     "on": "On",
-    "off": "Off"
+    "off": "Off",
+    "languages" : "EN"
   },
   "initData": {
     "set_your": "Set your start Data",

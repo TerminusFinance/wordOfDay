@@ -21,6 +21,7 @@ export async function connectDatabase() {
         console.log('Connected to MySQL database');
         await createTables(connection)
         await modifyColumn(connection)
+        // await addedItemToColum(connection)
         return connection;
     } catch (error) {
         console.error('Error connecting to MySQL database:', error);
@@ -154,5 +155,18 @@ async function modifyColumn(db: Connection): Promise<void> {
         console.log("Column 'dateReceived' modified to VARCHAR(255) successfully.");
     } catch (error) {
         console.error("Error modifying 'dateReceived' column:", error);
+    }
+}
+
+async function addedItemToColum(db: Connection) {
+    const addedToCustomTable = `
+        ALTER TABLE users ADD COLUMN coins INT DEFAULT 0
+`
+
+    try {
+        await db.execute(addedToCustomTable);
+        console.log("Column 'addedToCustomTable' modified to VARCHAR(255) successfully.");
+    } catch (e) {
+        console.error("Error modifying 'dateReceived' column:", e);
     }
 }

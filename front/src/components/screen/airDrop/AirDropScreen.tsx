@@ -1,17 +1,17 @@
-import React, { useEffect, useState } from "react";
-import colors, { useTelegramBackButton } from "../../viewComponents/Utilits.ts";
+import React, {useEffect, useState} from "react";
+import colors, {useTelegramBackButton} from "../../viewComponents/Utilits.ts";
 import DownDockBar from "../../viewComponents/downDockBar/DownDockBar.tsx";
-import { useNavigate } from "react-router-dom";
+import {useNavigate} from "react-router-dom";
 import IcCircleInf from "../../../assets/ico/ic_inco_circle.svg";
-import { AboutAirDropModal } from "../../modal/aboutAirDrop/AboutAirDrop.tsx";
+import {AboutAirDropModal} from "../../modal/aboutAirDrop/AboutAirDrop.tsx";
 import IcBg from "../../../assets/ico/bg_air_drop.png";
-import { useData } from "../../coreComponents/DataContext.tsx";
-import { useToast } from "../../viewComponents/Toast.tsx";
-import { Address, beginCell, toNano } from "ton-core";
-import { useTonConnectUI, useTonWallet } from "@tonconnect/ui-react";
-import { getUserById } from "../../coreComponents/remoteWorks/UserRemote.ts";
-import { checkTonTransfer, updateUser } from "../../coreComponents/remoteWorks/AirDropRemote.tsx";
-import { ButtonIsDisabled } from "../../viewComponents/buttonIsDisabled/ButtonIsDisabled.tsx";
+import {useData} from "../../coreComponents/DataContext.tsx";
+import {useToast} from "../../viewComponents/Toast.tsx";
+import {Address, beginCell, toNano} from "ton-core";
+import {useTonConnectUI, useTonWallet} from "@tonconnect/ui-react";
+import {getUserById} from "../../coreComponents/remoteWorks/UserRemote.ts";
+import {checkTonTransfer, updateUser} from "../../coreComponents/remoteWorks/AirDropRemote.tsx";
+import {ButtonIsDisabled} from "../../viewComponents/buttonIsDisabled/ButtonIsDisabled.tsx";
 import {useTranslation} from "react-i18next";
 
 const descriptions = "Airdrop — это распределение токенов по кошелькам игроков. Эти токены будут торговаться на ведущих биржах, и вы сможете либо продать их, либо держать у себя. Чтобы получить токены, вы должны подключить свой кошелек.\n" +
@@ -19,9 +19,9 @@ const descriptions = "Airdrop — это распределение токено
 
 export const AirDropScreen: React.FC = () => {
     const navigate = useNavigate();
-    const { dataApp, setDataApp } = useData();
+    const {dataApp, setDataApp} = useData();
     const [stateBtn, setStateBtn] = useState<"connectedWallet" | "sendTone" | "checkoutPayment">("connectedWallet");
-    const { showToast } = useToast();
+    const {showToast} = useToast();
     const wallet = useTonWallet();
     const [tonConnectUI] = useTonConnectUI();
     const [onOpenModalAbout, setOnOpenModalAbout] = useState(false);
@@ -46,9 +46,9 @@ export const AirDropScreen: React.FC = () => {
     const checkoutPayment = async () => {
         try {
             const result = await checkTonTransfer();
-            if (result) {
+            if (result == true) {
                 showToast("Congratulations! You are participating in the air drop", "success");
-                setDataApp((prev) => ({ ...prev, enabledAirDrop: 1 }));
+                setDataApp((prev) => ({...prev, enabledAirDrop: 1}));
                 navigate(-1);
             } else {
                 showToast("Try to check after a while", "error");
@@ -98,7 +98,7 @@ export const AirDropScreen: React.FC = () => {
     };
 
     const updateAddressUsers = async (address: string) => {
-        await updateUser({ address });
+        await updateUser({address});
         const userData = await getUserById();
         if (typeof userData === "object") {
             setDataApp(userData);
@@ -136,13 +136,25 @@ export const AirDropScreen: React.FC = () => {
                 backgroundPosition: 'center',
                 backgroundRepeat: 'no-repeat',
             }}>
-                <span style={{ color: colors.pink, textAlign: 'center', fontFamily: "UbuntuBold", fontSize: '24px', marginTop: '24px' }}>
+                <span style={{
+                    color: colors.pink,
+                    textAlign: 'center',
+                    fontFamily: "UbuntuBold",
+                    fontSize: '24px',
+                    marginTop: '24px'
+                }}>
                     {t('airDrop.air_drop')}
                 </span>
-                <span style={{ color: colors.white, textAlign: 'center', fontFamily: "UbuntuMedium", fontSize: '16px', padding: '0 12px' }}>
+                <span style={{
+                    color: colors.white,
+                    textAlign: 'center',
+                    fontFamily: "UbuntuMedium",
+                    fontSize: '16px',
+                    padding: '0 12px'
+                }}>
                     {t('airDrop.between_players')}
                 </span>
-                <div style={{ display: 'flex', justifyContent: 'center', padding: '20px' }}>
+                <div style={{display: 'flex', justifyContent: 'center', padding: '20px'}}>
                     <div style={{
                         display: 'inline-flex',
                         flexDirection: "row",
@@ -151,37 +163,56 @@ export const AirDropScreen: React.FC = () => {
                         borderRadius: '16px',
                         background: colors.white,
                     }} onClick={() => setOnOpenModalAbout(true)}>
-                        <span style={{ fontSize: '14px', color: colors.black, fontFamily: 'UbuntuMedium' }}>
+                        <span style={{fontSize: '14px', color: colors.black, fontFamily: 'UbuntuMedium'}}>
                             {t('airDrop.read_more')}
                         </span>
-                        <img src={IcCircleInf} style={{ width: '16px', height: '16px' }} />
+                        <img src={IcCircleInf} style={{width: '16px', height: '16px'}}/>
                     </div>
                 </div>
             </div>
 
-            <span style={{
-                width: 'calc(100% - 48px)',
-                fontSize: '24px',
-                marginTop: '32px',
-                fontFamily: 'UbuntuBold',
-                color: colors.white,
-                textAlign: 'left',
-                paddingLeft: '24px',
-            }}>
+
+            {dataApp.enabledAirDrop == 1 ? <span>
+                Air drop is enabled!
+                </span> :
+                <div style={{
+                    width: '100%',
+                    position: 'relative',
+                    overflow: 'hidden',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '8px',
+                }}>
+                            <span style={{
+                                width: 'calc(100% - 48px)',
+                                fontSize: '24px',
+                                marginTop: '32px',
+                                fontFamily: 'UbuntuBold',
+                                color: colors.white,
+                                textAlign: 'left',
+                                paddingLeft: '24px',
+                            }}>
                 {t('airDrop.enable_air_drop')}
             </span>
 
-            <div style={{ padding: '0 24px' }}>
-                <ButtonIsDisabled onClick={connectedWallet} disabled={stateBtn !== "connectedWallet"} tx={t('airDrop.connect_wallet')} />
-            </div>
+                    <div style={{padding: '0 24px'}}>
+                        <ButtonIsDisabled onClick={connectedWallet} disabled={stateBtn !== "connectedWallet"}
+                                          tx={t('airDrop.connect_wallet')}/>
+                    </div>
 
-            <div style={{ padding: '0 24px' }}>
-                <ButtonIsDisabled onClick={sendTransactions} disabled={stateBtn !== "sendTone"} tx={t('airDrop.send_transaction')} />
-            </div>
+                    <div style={{padding: '0 24px'}}>
+                        <ButtonIsDisabled onClick={sendTransactions} disabled={stateBtn !== "sendTone"}
+                                          tx={t('airDrop.send_transaction')}/>
+                    </div>
 
-            <div style={{ padding: '0 24px' }}>
-                <ButtonIsDisabled onClick={checkoutPayment} disabled={stateBtn !== "checkoutPayment"} tx={t('airDrop.check_transaction')} />
-            </div>
+                    <div style={{padding: '0 24px'}}>
+                        <ButtonIsDisabled onClick={checkoutPayment} disabled={stateBtn !== "checkoutPayment"}
+                                          tx={t('airDrop.check_transaction')}/>
+                    </div>
+
+
+                </div>}
+
 
             <div style={{
                 position: 'fixed',
@@ -197,7 +228,8 @@ export const AirDropScreen: React.FC = () => {
                     initialSelected={"airDrop"}
                     onPredictionsClick={() => navigate('/predictions')}
                     onProfileClick={() => navigate('/profile')}
-                    onAirDropClick={() => {}}
+                    onAirDropClick={() => {
+                    }}
                     onReferralsClick={() => navigate('/referrals')}
                     onTasksClick={() => navigate('/tasks')}
                 />

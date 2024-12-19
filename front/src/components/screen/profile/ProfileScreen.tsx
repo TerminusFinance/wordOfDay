@@ -5,32 +5,21 @@ import {useNavigate} from "react-router-dom";
 import ProfileImage from "../../viewComponents/profileImage/ProfileImage.tsx";
 import {useData} from "../../coreComponents/DataContext.tsx";
 import {useTranslation} from "react-i18next";
-import {changeLanguage} from "i18next";
+import {changeLanguage} from "../../coreComponents/translations/i18n.ts";
+
+
 export const ProfileScreen: React.FC = () => {
     const navigate = useNavigate();
     const { dataApp, userPhraseData } = useData();
-
 
     const dockBarHeight = 60;
     const {t} = useTranslation()
 
     try {
-
         useTelegramBackButton(true)
     } catch (e) {
         console.log("error in postEvent - ", e)
     }
-
-    const listLanguage = [
-        {
-            code: "RU",
-        },
-        {
-            code: "EN",
-        }
-    ];
-
-    const [selectedLanguage, setSelectedLanguage] = useState(listLanguage[1]);
 
     return (
         <div
@@ -79,7 +68,7 @@ export const ProfileScreen: React.FC = () => {
                         textAlign: 'left',
                     }}
                 >
-                    {t('profile.statistics')}
+                    {t('profile.statistic')}
                 </span>
 
                 <ItemTx txUno={t('profile.words_you_received')} txDos={userPhraseData.totalPhrases.toString()} />
@@ -98,8 +87,7 @@ export const ProfileScreen: React.FC = () => {
                        {t('profile.app_settings')}
                 </span>
 
-                <ItemTxMenu txUno={t('profile.language')} txDos={selectedLanguage.code} openedMenu={["EN", "RU"]} onSelect={(code) => {
-                    setSelectedLanguage({code})
+                <ItemTxMenu txUno={t('profile.language')} txDos={t('profile.languages')} openedMenu={["en", "ru"]} onSelect={(code) => {
                     changeLanguage(code.toLowerCase())
                 }} />
                 <ItemTx txUno={t('profile.air_drop')} txDos={dataApp.enabledAirDrop ? t('profile.on') : t('profile.off')} />

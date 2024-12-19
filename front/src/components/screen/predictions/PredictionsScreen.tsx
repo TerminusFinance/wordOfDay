@@ -48,7 +48,7 @@ export const PredictionsScreen: React.FC = () => {
         if (!isLoadingBtn && !isComplete) {
             setIsLoadingBtn(true);
             try {
-                const result = await getPhrase();
+                const result = await getPhrase(t('profile.languages'));
                 if (result && typeof result === "object") {
                     await fetchPhraseData(); // Обновляем данные
                     setIsComplete(true);

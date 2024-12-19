@@ -46,20 +46,20 @@ function userRouter(userService: UserService) {
     });
 
 
-    // router.put('/updateUsers', authMiddleware, async (req: Request, res: Response) => {
-    //     try {
-    //         const initData = res.locals.initData as InitDataParsed;
-    //
-    //         const id = initData.user?.id
-    //         if (id != undefined) {
-    //             const updatedUser = await userService.updateUser(id.toString(), req.body);
-    //             res.status(200).json(updatedUser);
-    //         }
-    //     } catch (error) {
-    //         console.error(error)
-    //         res.status(400).json({message: error});
-    //     }
-    // });
+    router.put('/updateUsers', authMiddleware, async (req: Request, res: Response) => {
+        try {
+            const initData = res.locals.initData as InitDataParsed;
+
+            const id = initData.user?.id
+            if (id != undefined) {
+                const updatedUser = await userService.updateUser(id.toString(), req.body);
+                res.status(200).json(updatedUser);
+            }
+        } catch (error) {
+            console.error(error)
+            res.status(400).json({message: error});
+        }
+    });
 
 
     router.post('/processInvitation', authMiddleware, async (req, res) => {
@@ -80,18 +80,18 @@ function userRouter(userService: UserService) {
     });
 
 
-    // router.get("/getInviterUsers", authMiddleware, async (req, res)=> {
-    //     try {
-    //         const initData = res.locals.initData as InitDataParsed;
-    //         const userId = initData.user?.id
-    //         if (userId != undefined) {
-    //             const result =await userService.getInviterUsers(userId.toString())
-    //             res.status(200).json(result)
-    //         }
-    //     } catch (error) {
-    //         res.status(400).json({message: error});
-    //     }
-    // })
+    router.get("/getInviterUsers", authMiddleware, async (req, res)=> {
+        try {
+            const initData = res.locals.initData as InitDataParsed;
+            const userId = initData.user?.id
+            if (userId != undefined) {
+                const result =await userService.getInviterUsers(userId.toString())
+                res.status(200).json(result)
+            }
+        } catch (error) {
+            res.status(400).json({message: error});
+        }
+    })
 
     return router;
 }

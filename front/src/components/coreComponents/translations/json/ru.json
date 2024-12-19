@@ -12,7 +12,7 @@
   "start": {
     "get_the_best": "Получите лучшее",
     "phrase": "предсказание",
-    "of_the_day": "дня",
+    "of_the_day": "",
     "right_now": "Получите прямо сейчас"
   },
   "profile": {
@@ -24,7 +24,8 @@
     "language": "Язык",
     "air_drop": "AirDrop",
     "on": "Включено",
-    "off": "Выключено"
+    "off": "Выключено",
+    "languages" : "RU"
   },
   "initData": {
     "set_your": "Укажите начальные данные",

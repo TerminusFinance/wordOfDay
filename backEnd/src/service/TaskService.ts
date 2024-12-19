@@ -29,13 +29,9 @@ import {CheckTransactions, isUserSubscribed, sendToCheckUserHaveNftFromCollectio
 
 
 class TaskService {
-    private userService!: UserService;
+    private userService =  new UserService(this.db);
 
     constructor(private db: Connection) {
-    }
-
-    setUserService(userService: UserService) {
-        this.userService = userService;
     }
 
     async checkAndUpdateTasksForUser(userId: string) {

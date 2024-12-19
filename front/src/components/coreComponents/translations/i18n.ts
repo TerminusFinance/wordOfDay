@@ -59,4 +59,5 @@ export default i18n;
 
 export const changeLanguage = (language: string) => {
     i18n.changeLanguage(language);
+    saveLanguageState(language); // Сохраняем язык в localStorage
 };
