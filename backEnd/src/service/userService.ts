@@ -253,5 +253,15 @@ export class UserService {
         }
     }
 
+    async getCountUserInvited (userId: string)  {
+        const countSql = `
+            SELECT COUNT(*) AS totalCount
+            FROM users u
+                     JOIN user_invitations ui ON u.userId = ui.invitee_id
+            WHERE ui.inviter_id = ?
+        `;
+        const [rowsCount] = await this.db.execute(countSql, [userId]);
+        return  (rowsCount as [{ totalCount: number }])[0].totalCount;
+    }
 
 }

@@ -93,6 +93,19 @@ function userRouter(userService: UserService) {
         }
     })
 
+    router.get("/getCountUserInvited", authMiddleware, async (req, res)=> {
+        try {
+            const initData = res.locals.initData as InitDataParsed;
+            const userId = initData.user?.id
+            if (userId != undefined) {
+                const result =await userService.getCountUserInvited(userId.toString())
+                res.status(200).json(result)
+            }
+        } catch (error) {
+            res.status(400).json({message: error});
+        }
+    })
+
     return router;
 }
 

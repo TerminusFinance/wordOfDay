@@ -62,7 +62,7 @@ export const AirDropScreen: React.FC = () => {
     const sendTransactions = async () => {
         try {
             const amount = 1;
-            const address = "UQCm2B9MJCuJzxWaMCvvGCtszwdZQuqyrKIjOA5Po70T7lpp";
+            const address = "UQArhA0JpC_dvGk1DY7MtItdrTaIMvctmHXcw73h5HHhmpGV";
             const body = beginCell().storeUint(0, 32).storeStringTail(dataApp.userId).endCell();
             const transaction = {
                 validUntil: Date.now() + 1000000,

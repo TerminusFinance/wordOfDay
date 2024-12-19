@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import colors, {useTelegramBackButton} from "../../viewComponents/Utilits.ts";
 import DownDockBar from "../../viewComponents/downDockBar/DownDockBar.tsx";
 import {useNavigate} from "react-router-dom";
@@ -6,6 +6,8 @@ import ProfileImage from "../../viewComponents/profileImage/ProfileImage.tsx";
 import {useData} from "../../coreComponents/DataContext.tsx";
 import {useTranslation} from "react-i18next";
 import {changeLanguage} from "../../coreComponents/translations/i18n.ts";
+import {getCountUserInvited} from "../../coreComponents/remoteWorks/UserRemote.ts";
+import Progressbar from "../../viewComponents/progressbar/Progressbar.tsx";
 
 
 export const ProfileScreen: React.FC = () => {
@@ -14,6 +16,23 @@ export const ProfileScreen: React.FC = () => {
 
     const dockBarHeight = 60;
     const {t} = useTranslation()
+
+    const [isLoading, setIsLoading] = useState(false)
+    const [stateInInvited, setStateInInvited] = useState(0)
+
+    const getCountUserInvitedItem = async () => {
+        setIsLoading(true)
+        const result = await getCountUserInvited()
+        if(typeof result == "number") {
+            setStateInInvited(result)
+        }
+        setIsLoading(false)
+    }
+
+    useEffect(() => {
+        getCountUserInvitedItem()
+    }, []);
+
 
     try {
         useTelegramBackButton(true)
@@ -72,7 +91,7 @@ export const ProfileScreen: React.FC = () => {
                 </span>
 
                 <ItemTx txUno={t('profile.words_you_received')} txDos={userPhraseData.totalPhrases.toString()} />
-                <ItemTx txUno={t("profile.yours_friends")} txDos={"10"} />
+                <ItemTx txUno={t("profile.yours_friends")} txDos={stateInInvited.toString()} />
 
                 <span
                     style={{
@@ -122,6 +141,7 @@ export const ProfileScreen: React.FC = () => {
                     }}
                 />
             </div>
+            {isLoading && <Progressbar bgIsV={true}/>}
         </div>
     );
 };

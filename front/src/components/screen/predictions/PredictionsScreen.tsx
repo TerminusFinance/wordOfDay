@@ -4,13 +4,14 @@ import DownDockBar from "../../viewComponents/downDockBar/DownDockBar.tsx";
 import { useNavigate } from "react-router-dom";
 import { getPhrase, getUserPhraseData } from "../../coreComponents/remoteWorks/UserPhraseRemote.ts";
 import {useTranslation} from "react-i18next";
+import {useData} from "../../coreComponents/DataContext.tsx";
 
 export const PredictionsScreen: React.FC = () => {
     const [isLoadingBtn, setIsLoadingBtn] = useState(false); // Состояние загрузки кнопки
     const [isComplete, setIsComplete] = useState(false); // Завершенность получения предсказания
     const [phraseData, setPhraseData] = useState<{ phrase: string; isToday: boolean } | null>(null); // Данные предсказания
     const navigate = useNavigate();
-
+    const {setUserPhraseData} = useData()
     // Кэш для сохранения данных между переходами
     const cachedPhraseData = React.useRef<{ phrase: string; isToday: boolean } | null>(null);
 
@@ -35,6 +36,7 @@ export const PredictionsScreen: React.FC = () => {
             if (result && typeof result === "object") {
                 cachedPhraseData.current = result; // Сохраняем данные в кэш
                 setPhraseData(result);
+                setUserPhraseData(result)
                 if (result.isToday) {
                     setIsComplete(true);
                 }
@@ -67,7 +69,7 @@ export const PredictionsScreen: React.FC = () => {
             height: '100vh',
             position: 'relative',
             overflow: 'hidden',
-            background: colors.black,
+            background: "linear-gradient(135deg, #000000, #1B0033)",
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',

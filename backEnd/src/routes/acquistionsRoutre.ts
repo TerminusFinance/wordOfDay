@@ -33,7 +33,7 @@ function acquisitionsRouter(acquisitionsController: AcquisitionsService) {
             const userId = initData.user?.id
             if(userId) {
                 const walletReseiverTest = '0QD_4qEt5T0D5-J1X2HEIU5CRFKmH4qZErVHaweyJGZncWOD'
-                const walletReseivermain = "UQCm2B9MJCuJzxWaMCvvGCtszwdZQuqyrKIjOA5Po70T7lpp"
+                const walletReseivermain = "UQArhA0JpC_dvGk1DY7MtItdrTaIMvctmHXcw73h5HHhmpGV"
                 const resultrequest = await acquisitionsController.checkOutTransferTone(userId.toString(), amount, walletReseivermain)
                 if (resultrequest) {
                     res.status(200).json({resultrequest: resultrequest});

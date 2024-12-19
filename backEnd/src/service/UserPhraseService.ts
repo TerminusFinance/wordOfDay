@@ -11,23 +11,29 @@ export class UserPhraseService {
     async getPhrase(userId: string, language: string): Promise<string> {
         // Получаем сегодняшнюю дату в формате 'YYYY/MM/DD'
         const today = new Date().toISOString().split('T')[0].replace(/-/g, '/').toString(); // '2024/12/06'
-        console.log("today",today)
+        console.log("today", today);
+
         // Проверяем, есть ли запись с сегодняшней датой
         const [rows] = await this.db.query(
-            `SELECT dateReceived FROM UserPhrases WHERE userId = ?`,
+            `SELECT dateReceived, phrase FROM UserPhrases WHERE userId = ?`,
             [userId]
         );
 
         if (Array.isArray(rows) && rows.length > 0) {
-            const { dateReceived } = rows[0] as { dateReceived: string };
+            const { dateReceived, phrase } = rows[0] as { dateReceived: string; phrase: string | null };
+
             if (dateReceived === today) {
-                throw new Error('User already received a phrase today.');
+                if (phrase && phrase.trim() !== '') {
+                    throw new Error('User already received a phrase today.');
+                }
+                // Если дата совпадает, но phrase пустая, продолжаем выдавать новую фразу
             }
         }
 
         // Генерируем случайную фразу
         const phrase = await this.generateRandomPhrase(language);
-        console.log("phrase is -",phrase)
+        console.log("phrase is -", phrase);
+
         // Вставляем или обновляем запись в базу данных
         await this.db.query(
             `INSERT INTO UserPhrases (userId, phrase, dateReceived, totalPhrases)
@@ -36,7 +42,7 @@ export class UserPhraseService {
                                       phrase = VALUES(phrase),
                                       dateReceived = VALUES(dateReceived),
                                       totalPhrases = totalPhrases + 1`,
-            [userId, phrase, today]  // Передаем дату как строку в формате 'YYYY/MM/DD'
+            [userId, phrase, today] // Передаем дату как строку в формате 'YYYY/MM/DD'
         );
 
         return phrase;

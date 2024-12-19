@@ -113,3 +113,22 @@ export const getTaskForUser = async () => {
         throw error;
     }
 }
+
+export const getCountUserInvited = async () => {
+    try {
+
+        const result = await axios.get<number>(`${BASE_URL}users/getCountUserInvited`,
+            {headers: {Authorization: `tma ${initDataRaw}`}}
+        );
+
+        return result.data;
+    } catch (error) {
+        console.error('Error processing invitation:', error);
+        console.error('Error getting user:', error);
+        if (axios.isAxiosError(error) && error.response) {
+            console.log('Axios error response data:', error.response.data);
+            return "User not found"
+        }
+        throw error;
+    }
+}
