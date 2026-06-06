@@ -10,4 +10,4 @@ A Telegram Mini App game on TON: daily phrases/predictions, tasks, referrals and
 TypeScript · React · Vite · TON · Telegram Mini Apps · i18n (EN/RU)
 
 ## Links
-- 🌐 https://terminus.finance
+- 🌐 https://terminus.pw/
